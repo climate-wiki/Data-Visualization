@@ -1,0 +1,60 @@
+<html>
+<body>
+ <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script type="text/javascript">
+    //描画ボタンを押すと発火する関数を定義
+    function clickBtn5() {
+        const ta3 = document.getElementById("textarea3").value;//textareaのテキストを取得
+        let ta3_array=ta3.split('\n');//改行で区切る
+
+        //テキストを[[from,to,数量],[from,to,数量],[from,to,数量],]の形に変換
+        let diagram_list = [];
+        for(let i = 0; i < ta3_array.length; i++){
+            let ans_list_text=ta3_array.slice(i, i+1).join().replace(" ", "").replace("　", "").split(',');
+            if (ans_list_text.length>1){//中身が入っていない行を除く
+                ans_list_text.pop();
+                let ans_list_num=parseFloat(ta3_array.slice(i, i+1).join().replace(" ", "").replace("　", "").split(',').slice(2,3).join());
+                ans_list_text.push(ans_list_num);
+                diagram_list.push(ans_list_text);
+            }
+            else{
+                ;
+            }
+        }
+
+        google.charts.load("current", {packages:["sankey"]});
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'From');//from
+            data.addColumn('string', 'To');//to
+            data.addColumn('number', 'Weight');//量
+            data.addRows(
+            diagram_list
+            );
+
+            // Set chart options
+            var options = {
+            width: 600,
+            };
+            
+            // Instantiate and draw our chart, passing in some options.
+            var chart = new google.visualization.Sankey(document.getElementById('sankey_multiple'));
+            chart.draw(data, options);
+        }
+  }
+</script>
+<textarea cols="100" rows="20" id="textarea3">
+天然ガス,都市ガス,100
+天然ガス,事業用発電,150
+石炭,石炭製品,40
+石炭,事業用発電,50
+原油,石油製品,200
+事業用発電,企業事業所等,100
+事業用発電,損失,100</textarea>
+<input type="button" value="描画する" onclick="clickBtn5()">
+<H2>描画結果</h2>
+<div id="sankey_multiple" style="width: 100%;"></div>
+</body>
+</html>
